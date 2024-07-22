@@ -20,20 +20,16 @@ const LoginPage: React.FC = () => {
         variables: { loginUserInput: { email, password } },
       });
       if (response.data) {
-        // Lưu trữ hoặc sử dụng token khi đăng nhập thành công
         Cookies.set("access_token", response.data.login.access_token, {
-          expires: 1 / 1440,
+          expires: 1,
         });
 
         Cookies.set("refresh_token", response.data.login.refresh_token, {
           expires: 7,
         });
-        console.log("Access Token:", response.data.login.access_token);
-        console.log("Refresh Token:", response.data.login.refresh_token);
         navigate("/");
       }
     } catch (err) {
-      // Cập nhật trạng thái khi có lỗi
       setMessage("Login failed. Please check your credentials.");
       setOpen(true);
     }
@@ -42,7 +38,6 @@ const LoginPage: React.FC = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
   return (
     <Box
       sx={{

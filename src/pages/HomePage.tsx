@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Avatar, Box, Button } from "@mui/material";
 import UserTable from "../components/UserTable";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { GET_USER_FROM_TOKEN, LOGOUT_MUTATION } from "../queries/authQueries";
 import { useMutation, useQuery } from "@apollo/client";
 
+
 const HomePage: React.FC = () => {
   const accessToken = Cookies.get("access_token");
-  console.log("accessToken", accessToken);
   const navigate = useNavigate();
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -20,11 +20,7 @@ const HomePage: React.FC = () => {
     variables: { access_token: accessToken },
     skip: !accessToken, // Bỏ qua query khi không có token
   });
-
-  const [
-    logout,
-    { data: mutationData, loading: mutationLoading, error: mutationError },
-  ] = useMutation(LOGOUT_MUTATION);
+  const [logout] = useMutation(LOGOUT_MUTATION);
 
   useEffect(() => {
     if (accessToken) {
@@ -39,9 +35,8 @@ const HomePage: React.FC = () => {
   };
 
   const handleLogoutClick = async () => {
-    if (queryLoading) return; // Nếu đang tải, không làm gì cả
+    if (queryLoading) return;
     if (queryError) {
-      console.error("Query Error:", queryError);
       return;
     }
     if (
@@ -49,13 +44,11 @@ const HomePage: React.FC = () => {
       !queryData.getUserFromToken ||
       !queryData.getUserFromToken.id
     ) {
-      console.error("User ID is not available.");
       return;
     }
 
     try {
-      const userId = queryData.getUserFromToken.id; // Sửa đây
-      console.log("userId", userId);
+      const userId = queryData.getUserFromToken.id;
       await logout({ variables: { userId } });
       Cookies.remove("access_token");
       Cookies.remove("refresh_token");
@@ -68,6 +61,13 @@ const HomePage: React.FC = () => {
   if (queryLoading) return <p>Loading...</p>;
   if (queryError) return <p>Error: {queryError.message}</p>;
 
+  const UserAvatar = () => {
+    if (!queryData) return;
+    const name = queryData.getUserFromToken.name;
+    const firstLetter = name.charAt(0).toUpperCase();
+
+    return <Avatar>{firstLetter}</Avatar>;
+  };
   return (
     <Box>
       <Box
@@ -75,29 +75,40 @@ const HomePage: React.FC = () => {
           width: "100%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "space-between",
           height: "75px",
           bgcolor: "#00b894",
           gap: 2,
+          paddingLeft: "16px",
+          paddingRight: "16px",
         }}
       >
         {isLoggedIn ? (
           <>
-            <Button
-              variant="contained"
-              sx={{ height: "50px", maxWidth: "150px" }}
-              onClick={() => navigate("/create-user")}
-            >
-              Create User
-            </Button>
-
-            <Button
-              variant="contained"
-              sx={{ height: "50px", maxWidth: "150px" }}
-              onClick={handleLogoutClick}
-            >
-              Logout
-            </Button>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Button
+                variant="contained"
+                sx={{ height: "50px", maxWidth: "150px" }}
+                onClick={() => navigate("/create-user")}
+              >
+                Create User
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ height: "50px", maxWidth: "150px" }}
+                onClick={() => navigate("/create-pet")}
+              >
+                Create Pet
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ height: "50px", maxWidth: "150px" }}
+                onClick={handleLogoutClick}
+              >
+                Logout
+              </Button>
+            </Box>
+            <UserAvatar />
           </>
         ) : (
           <Button

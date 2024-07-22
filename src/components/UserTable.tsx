@@ -6,12 +6,13 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { ListUsersData } from "../types/userTypes";
-import { useQuery } from "@apollo/client";
-import { LIST_USERS } from "../queries/userQueries";
+// import { ListUsersData } from "../types/userTypes";
+// import { useQuery } from "@apollo/client";
+// import { LIST_USERS } from "../queries/userQueries";
+import useListUsers from "../hooks/useListUsers";
 
 const UserTable: React.FC = () => {
-  const { data, loading, error } = useQuery<ListUsersData>(LIST_USERS);
+  const { data, loading, error } = useListUsers();
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -43,10 +44,10 @@ const UserTable: React.FC = () => {
               <TableCell align="right">{user.age}</TableCell>
               <TableCell align="right">{user.email}</TableCell>
               <TableCell align="right">
-                <ul>
+                <ul style={{ listStyleType: "none " }}>
                   {user.pets?.map((pet) => (
                     <li key={pet.id}>
-                      {pet.name} (Age: {pet.age})
+                      - {pet.name} (Age: {pet.age})
                     </li>
                   ))}
                 </ul>
