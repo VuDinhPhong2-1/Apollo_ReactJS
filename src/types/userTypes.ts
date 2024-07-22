@@ -1,10 +1,4 @@
-export interface PetResponse {
-  id: string;
-  age: number;
-  name: string;
-  userId: string;
-  user?: User; // user có thể là null hoặc undefined
-}
+import { PetResponse } from "./petTypes";
 
 export interface User {
   id: string;
